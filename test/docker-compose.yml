@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:latest
+    hostname: test_db            
+    environment:
+      - MYSQL_INITDB_SKIP_TZINFO=yes
+      - MYSQL_ROOT_PASSWORD=YourStrongSecret
+      - MYSQL_DATABASE=testdb
+      - MYSQL_USER=testuser
+      - MYSQL_PASSWORD=YourStrongSecret
+    healthcheck: 
+      test: "mysql -u testuser --password='YourStrongSecret' -e 'Select 1'"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s 
+    ports:
+      - 3306:3306    
+    volumes:
+      - ./init-testdb.sql:/docker-entrypoint-initdb.d/init-testdb.sql:ro   
+  www:
+    image: gbalboa72/tomcat-apr-mariadb-arm64:latest
+    hostname: www                  
+    depends_on:       
+      - db
+    command: [bin/wait-for-db.sh, "bin/catalina.sh","run", "-security" ] 
+    environment:               
+      - DB_HOST=test_db
+      - DB_PORT=3306 
+      - DB_NAME=testdb 
+      - DB_USR_NAME=webappusr
+      - DB_USR_PASS=b45b2a92ce4cd1e027dc3f511064235fb390518a1d892b490ce7352ddd25b73a0e1a10c6e6c467e0e696d91bd47d34bc107e26f68205d3f6503c1b3ee625055b
+      - DB_USR_TABLE=Users
+      - DB_USR_NAMEFIELD=LoginName
+      - DB_USR_PASSFIELD=PwdHash
+      - DB_USR_ROLE_TABLE=UserRoles
+      - DB_ROLE_FIELDNAME=RoleId
+    ports:
+    - 443:8443
+    - 8000:8000              
+    
+
