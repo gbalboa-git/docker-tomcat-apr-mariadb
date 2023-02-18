@@ -13,7 +13,7 @@ RUN git clone https://github.com/gbalboa-git/tomcat-security-utils.git \
     && mvn -f tomcat-security-utils/pom.xml package \
     && wget "https://downloads.mariadb.com/Connectors/java/connector-java-2.7.1/mariadb-java-client-2.7.1.jar"
 
-FROM gbalboa72/tomcat-apr:latest
+FROM gbalboa72/tomcat-apr:1.0
 
 LABEL maintainer="Gustavo Balboa <gbalboa@hotmail.com>" \
     name="Tomcat-APR-MariaDB" \
